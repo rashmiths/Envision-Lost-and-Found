@@ -7,6 +7,7 @@ class MyApp extends StatelessWidget{
   Widget build(BuildContext context) {
     // TODO: implement build
     return new MaterialApp(
+        debugShowCheckedModeBanner: false,
       home: new LoginPage(),
       theme:new ThemeData(
         primarySwatch: Colors.blue
@@ -23,11 +24,13 @@ class LoginPageState extends State<LoginPage>
 {
   @override
   Widget build(BuildContext context){
+
     return new Scaffold(
+
       backgroundColor: Colors.blue,
       body: new Stack(
         children: <Widget>[
-          new Image(image: new AssetImage("assets/walpaper.jpg"),
+          new Image(image: new AssetImage("assets/walpaper.jpeg"),
           fit: BoxFit.cover,
           color: Colors.black87,
           colorBlendMode:BlendMode.darken,
