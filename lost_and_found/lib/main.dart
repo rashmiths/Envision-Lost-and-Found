@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main()=> runApp( new  MyApp());
 
@@ -24,6 +25,8 @@ class LoginPage extends StatefulWidget{
 }
 class LoginPageState extends State<LoginPage>
 {
+  String  _email, _password;
+  final GlobalKey<FormState> _formkey=GlobalKey<FormState>();
   @override
   Widget build(BuildContext context){
     return new Scaffold(
@@ -37,6 +40,9 @@ class LoginPageState extends State<LoginPage>
               colorBlendMode:BlendMode.darken,
             ),
             new Image(image: new AssetImage("assets/nitk1.jpeg",),
+              alignment: Alignment.topCenter,
+              height: 0.1,
+              width: 0.1,
 
             ),
             new Column(
@@ -60,9 +66,9 @@ class LoginPageState extends State<LoginPage>
                       children: <Widget>[
                          new TextFormField(
                           decoration: new InputDecoration(
-                            hintText: "Enter RegNo",
+                            hintText: "Enter email",
                           ),
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.text,
                         ),
                          new TextFormField(
                           decoration: new InputDecoration(
@@ -76,7 +82,7 @@ class LoginPageState extends State<LoginPage>
                           height: 40,
                           textColor: Colors.white,
                           child: new Text("login"),
-                          onPressed: ()=>{},
+                          onPressed: ()=>{signIn()},
                           splashColor: Colors.redAccent,
                         )
                       ],
@@ -88,6 +94,18 @@ class LoginPageState extends State<LoginPage>
             )]
       ),
     );
+
+  }
+  Future<void> signIn() async{
+    final formState = _formkey.currentState;
+    if(formState.validate()){
+      formState.save();
+      try{
+      FirebaseUser user =await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email,password: _password);
+    }
+    catch(e){
+        print(e.message);
+    }
 
   }
 }
