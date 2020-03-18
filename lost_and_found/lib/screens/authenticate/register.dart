@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lost_and_found/services/auth.dart';
+import 'package:lost_and_found/shared/constants.dart';
+import 'package:lost_and_found/shared/loading.dart';
 
 class Register extends StatefulWidget {
 
@@ -14,6 +16,7 @@ class _RegisterState extends State<Register> {
 
 final AuthService _auth = AuthService();
 final _formKey= GlobalKey<FormState>();
+bool loading= false;
 
     //text field state
   String email = '';
@@ -23,10 +26,10 @@ final _formKey= GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return loading ? Loading() : Scaffold(
       backgroundColor: Colors.blue,
       appBar: AppBar(
-        backgroundColor: Colors.blueAccent[100],
+        backgroundColor: Colors.teal,
         elevation: 0.0,
         title: Text('Sign up to Lost and Found'),
         actions: <Widget>[
@@ -76,9 +79,7 @@ final _formKey= GlobalKey<FormState>();
                             setState(() => email= val);
 
                           },
-                          decoration: InputDecoration(
-                            hintText: "Enter EmailId",
-                          ),
+                          decoration: textInputDecoration.copyWith(hintText: 'Email'),
                           keyboardType: TextInputType.text,
                         ),
                          TextFormField(
@@ -88,9 +89,7 @@ final _formKey= GlobalKey<FormState>();
                              setState(() => password= val);
 
                                   },
-                          decoration: InputDecoration(
-                            hintText: "Enter password ",
-                          ),
+                          decoration:  textInputDecoration.copyWith(hintText: 'Password'),
                           keyboardType: TextInputType.text,
                           obscureText: true,
                         ),
@@ -101,9 +100,13 @@ final _formKey= GlobalKey<FormState>();
                           child:  Text("Register"),
                             onPressed: () async {
                               if(_formKey.currentState.validate()){
+                                setState(()=> loading= true);
                                 dynamic result= await _auth.registerWithEmailAndPassword(email, password);
                                 if(result== null){
-                                  setState(()=> error= 'please supply a valid email');
+                                  setState((){ 
+                                    error= 'please supply a valid email';
+                                    loading= false;
+                                  });
 
                                 } 
                                 print(email);
