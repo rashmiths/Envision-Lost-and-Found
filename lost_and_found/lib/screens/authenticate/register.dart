@@ -1,44 +1,44 @@
-import 'dart:ffi';
-
-import 'package:lost_and_found/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lost_and_found/services/auth.dart';
 
-
-class SignIn extends StatefulWidget{
+class Register extends StatefulWidget {
 
   final Function toggleView;
-  SignIn({this.toggleView});
+  Register({this.toggleView});
 
   @override
-  _SignInState createState()=> _SignInState();
+  _RegisterState createState() => _RegisterState();
 }
-class _SignInState extends State<SignIn>
-{
-  final AuthService _auth = AuthService();
 
-  //text field state
+class _RegisterState extends State<Register> {
+
+final AuthService _auth = AuthService();
+final _formKey= GlobalKey<FormState>();
+
+    //text field state
   String email = '';
   String password = '';
+  String error= '';
 
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return  Scaffold(
       backgroundColor: Colors.blue,
       appBar: AppBar(
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.blueAccent[100],
         elevation: 0.0,
-        title: Text('Sign in to Lost and Found'),
+        title: Text('Sign up to Lost and Found'),
         actions: <Widget>[
           FlatButton.icon(
            onPressed: (){
-              widget.toggleView();
+             widget.toggleView();
            },
            icon: Icon(Icons.person),
-           label: Text('Register'),
+           label: Text('Sign In'),
            )
         ],
-        ),
+      ),
       body:  Stack(
           fit: StackFit.expand,
           children: <Widget>[
@@ -57,6 +57,7 @@ class _SignInState extends State<SignIn>
                   size:0
                 ),
                 Form(
+                  key: _formKey,
                   child : Theme(
                     data: ThemeData(
                     brightness: Brightness.dark,primarySwatch: Colors.teal,
@@ -70,6 +71,7 @@ class _SignInState extends State<SignIn>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                          TextFormField( 
+                          validator: (val) => val.isEmpty ? 'Enter an email': null,
                           onChanged: (val){
                             setState(() => email= val);
 
@@ -80,11 +82,12 @@ class _SignInState extends State<SignIn>
                           keyboardType: TextInputType.text,
                         ),
                          TextFormField(
+                           validator: (val) => val.length<6 ? 'Password should be atleast 6 characters long': null,
                            
                            onChanged: (val){
                              setState(() => password= val);
 
-                                      },
+                                  },
                           decoration: InputDecoration(
                             hintText: "Enter password ",
                           ),
@@ -92,26 +95,30 @@ class _SignInState extends State<SignIn>
                           obscureText: true,
                         ),
                         
-                        //Though email id and password are taken here, for now anonymous method is tried to be
-                        //taken here(Change this later)
-
-                         //if there is an error later, try to change RaisedButton to MaterialButton and add height
-                         RaisedButton(
+                        RaisedButton(
                           color:Colors.teal,
                           textColor: Colors.white,
-                          child:  Text("login"),
+                          child:  Text("Register"),
                             onPressed: () async {
-                              print(email);
-                              print(password);
-                                /*dynamic result = await _auth.signInAnon();
-                                if(result == null){
-                                  print('error signing in');
-                                } else {
-                                  print('signed in');
-                                  print(result.uid);
-                                }*/
+                              if(_formKey.currentState.validate()){
+                                dynamic result= await _auth.registerWithEmailAndPassword(email, password);
+                                if(result== null){
+                                  setState(()=> error= 'please supply a valid email');
+
+                                } 
+                                print(email);
+                                print(password);
+
+                              }
+                              
+                                
                           },
                           splashColor: Colors.redAccent,
+                        ),
+                        SizedBox(height: 12.0),
+                        Text(
+                          error,
+                          style: TextStyle(color: Colors.red, fontSize: 14.0),
                         )
                       ],
                     ),
