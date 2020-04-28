@@ -1,13 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:iris_assingment/model/taskclass.dart';
 import './ListOfTasks.dart';
 import './NewTasks.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart' ;
 
-void main() {
+void main()  async {
+  WidgetsFlutterBinding.ensureInitialized();
+  print('opening directory');
+  final directory=await getApplicationDocumentsDirectory();
+  Hive.init(directory.path);
+  Hive.registerAdapter(TaskAdapter());
+  
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,8 +37,28 @@ class MyApp extends StatelessWidget {
               ),
             ),
       ),
-      home: MyHomePage(),
+      home: FutureBuilder(
+        future: Hive.openBox('todo'),
+        builder: (BuildContext context, AsyncSnapshot snapshot){
+          if(snapshot.connectionState==ConnectionState.done){
+            if(snapshot.hasError){
+              return Text(snapshot.error.toString());
+            } else{
+              print('OpenedBox');
+              return MyHomePage();
+            }
+          } else{
+            return Scaffold();
+          }
+
+        })
     );
+  }
+   @override
+  void dispose(){
+    Hive.close();
+    print('closed box');
+    super.dispose();
   }
 }
 

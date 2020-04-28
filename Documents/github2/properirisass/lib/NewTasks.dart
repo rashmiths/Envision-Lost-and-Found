@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:iris_assingment/model/taskclass.dart';
 class NewTasks extends StatefulWidget {
   @override
   _NewTasksState createState() => _NewTasksState();
@@ -7,8 +9,8 @@ class NewTasks extends StatefulWidget {
 
 class _NewTasksState extends State<NewTasks> {
   DateTime selectedDate;
-  TextEditingController titlecontroller;
-  TextEditingController timecontroller;
+  TextEditingController titlecontroller=TextEditingController();
+  TextEditingController timecontroller=TextEditingController();
 
   void presentDatePicker() {
     showDatePicker(
@@ -25,8 +27,10 @@ class _NewTasksState extends State<NewTasks> {
       });
     });
   }
-  void SubmitData() {
-    
+  void SubmitData(newtask) {
+   final todobox=Hive.box('todo');
+   todobox.add(newtask) ;
+   print('Adding $newtask')  ;
     
 
    
@@ -54,7 +58,9 @@ class _NewTasksState extends State<NewTasks> {
 
                         labelStyle: TextStyle(color: Colors.black)),
                      controller: titlecontroller,
-                     onSubmitted: (_) => SubmitData(),
+                    //  onSubmitted: (_) {
+                    //    //SubmitData(),
+                    //  }
                   ),
                   TextField(
                     decoration: InputDecoration(
@@ -62,7 +68,9 @@ class _NewTasksState extends State<NewTasks> {
                         labelStyle: TextStyle(color: Colors.black)),
                     keyboardType: TextInputType.number,
                      controller: timecontroller,
-                     onSubmitted: (_) => SubmitData(),
+                    //  onSubmitted: (_) {
+                    //   // SubmitData(),
+                    //  }
                   ),
                   Container(
                     height: 70,
@@ -87,7 +95,13 @@ class _NewTasksState extends State<NewTasks> {
                     child: Text('Add Task'),
                     color: Colors.blue,
                     textColor: Colors.white,
-                     onPressed: SubmitData,
+                     onPressed:() {
+                       final newTask= Task(titlecontroller.text,timecontroller.text);
+                      
+                       
+                       SubmitData(newTask);
+                        print(titlecontroller.text);
+                     },
                     
                   )
                 ]
